@@ -21,8 +21,10 @@
 - name: create helm soft link
   file:
     src: "{{ helm_bin_dir }}/helm"
-    dest: "/usr/bin/helm"
+    dest: "/usr/local/bin/helm"
     state: link
 
-- include_tasks: tiller.yml
-- include_tasks: rbac.yml
+#- name: install tiller
+ # include: tiller.yml
+#- name: install rbac
+ # include: rbac.yml
