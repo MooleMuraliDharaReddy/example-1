@@ -28,3 +28,27 @@
  # include: tiller.yml
 #- name: install rbac
  # include: rbac.yml
+- name: Ensure hello-helm-world directory exists (otherwise, the helm create will fail with permission denied)
+  file:
+    path: /root/hello-helm-world/
+    state: directory
+- name: Clone a private repository into /opt.
+  git:
+    repo: https://github.com/bootc/netbox-chart.git
+    version: master
+    dest: /root/hello-helm-world/
+    accept_hostkey: yes
+  # ssh-agent doesn't allow key to pass through remote sudo commands.
+  #   become: no
+
+
+
+- name: Run Hello-Helm-World Chart
+  shell: "helm install --name hello-helm-world /root/hello-helm-world"
+
+- name: Check if Hello-Helm-World Pod is running
+  shell: kubectl get pods -l app=hello-helm-world
+  register: helm_result
+  until: helm_result.stdout.find("Running") != -1
+  retries: 10
+  delay: 10
